@@ -19,6 +19,8 @@ empty holes in the grid. You decide what "the stuff you didn't come for" is:
 - **Your own words.** Hide titles containing "reaction", or keep only titles
   containing "bushcraft".
 - **Channels.** Never show these, always show those.
+- **Autoplay too.** If YouTube's "Up next" is a video Sift hid, autoplay plays the
+  next one you'd actually see instead.
 
 Put a set of these together and it's a **mode**. Sift comes with Everyday, Travel,
 Learn and Chill, and you can make your own and switch between them from the toolbar.
@@ -66,7 +68,7 @@ for anything not from its store.
 | | How it updates |
 |---|---|
 | Zen, Firefox | By itself. The browser checks about once a day; to check now: `about:addons` → gear → **Check for Updates**. |
-| Chrome and friends | Chrome doesn't update extensions from outside its store, so Sift tells you instead: when a new version is out, the popup shows **"Sift x.y.z is out · Get it"**. Download the new zip, unzip it over the same folder, then press the reload arrow on Sift's card in `chrome://extensions`. Your settings stay. |
+| Chrome and friends | Chrome doesn't update extensions from outside its store, so Sift tells you instead: when a new version is out, the popup shows a small **"x.y.z is out · Get it"** pill at the top. Download the new zip, unzip it over the same folder, then press the reload arrow on Sift's card in `chrome://extensions`. Your settings stay. |
 
 ### The API key is optional
 
