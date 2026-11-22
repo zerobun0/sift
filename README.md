@@ -33,9 +33,35 @@ Learn and Chill, and you can make your own and switch between them from the tool
 
 ## Install
 
-- **Firefox / Zen:** from addons.mozilla.org (link here once the listing is live), or grab the
-  signed `.xpi` from [Releases](../../releases) and drag it onto a browser window.
-- Needs Firefox 140 or newer. Zen follows current Firefox, so any recent Zen works.
+Get the files from the [latest release](../../releases/latest).
+
+### Zen or Firefox
+
+1. Download `sift-<version>.xpi`.
+2. Drag it onto a Zen or Firefox window (or open `about:addons`, click the gear,
+   then **Install Add-on From File...**).
+3. Click **Add** when the browser asks.
+
+That's it. The file is signed by Mozilla and Sift updates itself from here
+afterwards. Needs Firefox 140 or newer; any recent Zen works.
+
+A listing on addons.mozilla.org is on its way; the link goes here once it's approved.
+
+### Chrome, Edge, Brave, Opera, Vivaldi
+
+Sift isn't on the Chrome Web Store, so it goes in by hand:
+
+1. Download `sift-<version>-chrome.zip` and unzip it somewhere you'll keep it
+   (the browser loads it from that folder every time it starts).
+2. Open `chrome://extensions` (Edge: `edge://extensions`, Brave: `brave://extensions`).
+3. Turn on **Developer mode** (top right; on Edge it's in the left sidebar).
+4. Click **Load unpacked** and pick the unzipped folder, the one with `manifest.json` in it.
+5. Pin Sift from the puzzle-piece menu so the icon stays in the toolbar.
+
+To update: download the new zip, unzip it over the same folder, then press the
+reload arrow on Sift's card in `chrome://extensions`. Chrome may show a
+"developer mode extensions" notice on start-up; that's normal for anything not
+from its store.
 
 ### The API key is optional
 

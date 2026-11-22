@@ -5,3 +5,4 @@ artifacts/
 .env.*
 *.xpi
 *.zip
+CHANGES
