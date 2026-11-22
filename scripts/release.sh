@@ -4,7 +4,7 @@
 set -e
 cd "$(dirname "$0")/.."
 V=$(node -p "require('./package.json').version")
-set -a; . .env.amo; set +a
+set -a; . ./.env.amo; set +a
 SIFT_SELF=1 npm run build
 npx web-ext sign --channel unlisted --source-dir dist/firefox --artifacts-dir artifacts || true
 until [ -f "artifacts/sift-$V.xpi" ]; do node scripts/fetch-signed.mjs "artifacts/sift-$V.xpi" | tail -1; [ -f "artifacts/sift-$V.xpi" ] || sleep 30; done
