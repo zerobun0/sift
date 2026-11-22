@@ -1,0 +1,32 @@
+# Once a day: when Sift's public addons.mozilla.org page is live, add its link to the README
+# and to the release-notes template, commit, and stop (the marker below makes later runs no-ops).
+name: amo-link
+on:
+  schedule: [{ cron: '17 8 * * *' }]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  link:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add the AMO link once the listing is public
+        run: |
+          grep -q 'AMO-LINK-DONE' README.md && { echo "already linked"; exit 0; }
+          url=$(curl -fsS https://addons.mozilla.org/api/v5/addons/addon/sift@zerobun.com/ | jq -r 'select(.status=="public") | .url // empty') || true
+          [ -z "$url" ] && { echo "not public yet"; exit 0; }
+          python3 - "$url" <<'PY'
+          import sys
+          url = sys.argv[1]
+          p = 'README.md'; s = open(p).read()
+          s = s.replace("A listing on addons.mozilla.org is on its way; the link goes here once it's approved.",
+                        f"Or install it from addons.mozilla.org: **[Sift on Firefox Add-ons]({url})** <!-- AMO-LINK-DONE -->")
+          open(p, 'w').write(s)
+          p = 'scripts/release-notes.md'; s = open(p).read()
+          s = s.replace("then click **Add**.", f"then click **Add**. Or get it from [Firefox Add-ons]({url}).", 1)
+          open(p, 'w').write(s)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "README: link the public Firefox Add-ons listing" && git push
