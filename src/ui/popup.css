@@ -190,6 +190,9 @@ h2 {
   cursor: pointer;
 }
 
+.foot-links {
+  display: flex;
+}
 .foot {
   display: flex;
   align-items: center;

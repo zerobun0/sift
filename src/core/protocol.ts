@@ -28,6 +28,9 @@ export type PageToExt =
   | { t: 'learn'; cats: Record<string, number> }
   | { t: 'stats'; stats: PageStats }
   | { t: 'topics'; topics: string[] }
+  | { t: 'tally'; shown: number; reasons: Record<string, number> }
+  | { t: 'opened'; id: string; cat: number }
+  | { t: 'allow'; channel: string }
   | { t: 'hello' };
 
 export type ExtToPage = { t: 'settings'; settings: Settings } | { t: 'cats'; cats: Record<string, number> };
@@ -37,6 +40,8 @@ export type ToBackground =
   | { t: 'learn'; cats: Record<string, number> }
   | { t: 'stats'; stats: PageStats }
   | { t: 'topics'; topics: string[] }
+  | { t: 'tally'; shown: number; reasons: Record<string, number> }
+  | { t: 'opened'; id: string; cat: number }
   | { t: 'test-key'; key: string };
 
 export const VIDEO_ID = /^[\w-]{11}$/;

@@ -201,3 +201,40 @@ test('settings keep a mode topic, trimmed and capped', () => {
   assert.equal(s.modes[0].topic, 'Camping');
   assert.equal(s.modes[1].topic, '');
 });
+
+test('own topic words keep only matching titles; block words win', () => {
+  const v: VideoInfo = { id: 'abcdefghijk', kind: 'video', title: 'Winter Camping in a Tent', live: false, upcoming: false, members: false, seconds: 900 };
+  const s = settings({ keep: ['camping', 'bushcraft'] });
+  assert.equal(judge(v, s, none).reason, null);
+  assert.equal(judge({ ...v, title: 'Cooking pasta' }, s, none).reason, 'keep');
+  s.modes[0].words = ['winter'];
+  assert.equal(judge(v, s, none).reason, 'word');
+  assert.equal(normaliseSettings({}).showChip, true);
+});
+
+test('a length range or category pick hides things with no set length', () => {
+  const base: VideoInfo = { id: 'abcdefghijk', kind: 'video', title: 't', live: true, upcoming: false, members: false };
+  assert.equal(judge(base, settings({ minSec: 240, maxSec: 1200 }), none).reason, 'no-length');
+  assert.equal(judge(base, settings(), none).reason, null);
+  assert.equal(judge({ ...base, live: false, kind: 'playlist' }, settings({ include: [10] }), none).reason, 'no-length');
+  assert.equal(judge({ ...base, live: false, kind: 'playlist' }, settings(), none).reason, null);
+});
+
+test('refill helpers: find the list, its token, count and append', async () => {
+  const { continuationList, nextToken, countItems, appendPage } = await import('../src/core/refill.ts');
+  const lockup = collectRaw(load('watch.json'), 'lockupViewModel')[0];
+  const page = (tok: string, n: number) => ({
+    onResponseReceivedActions: [{ appendContinuationItemsAction: { continuationItems: [
+      ...Array.from({ length: n }, () => ({ richItemRenderer: { content: { lockupViewModel: lockup } } })),
+      { continuationItemRenderer: { continuationEndpoint: { continuationCommand: { token: tok } } } },
+    ] } }],
+  });
+  const a = page('T1', 2);
+  const list = continuationList(a)!;
+  assert.equal(nextToken(list), 'T1');
+  assert.equal(countItems(list), 2);
+  appendPage(list, continuationList(page('T2', 3)));
+  assert.equal(countItems(list), 5);
+  assert.equal(nextToken(list), 'T2');
+  assert.equal(continuationList(homeFeed()) !== null, true);
+});

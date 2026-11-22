@@ -14,6 +14,7 @@ const base: Omit<Mode, 'id' | 'name' | 'hue'> = {
   hideMembers: true,
   hideWatchedAt: 0,
   words: [],
+  keep: [],
   topic: '',
 };
 
@@ -35,6 +36,7 @@ export function defaultSettings(): Settings {
     blockChannels: [],
     allowChannels: [],
     surfaces: { home: true, search: true, watch: true, subs: false, channel: false, other: false },
+    showChip: true,
   };
 }
 
@@ -62,6 +64,7 @@ function normaliseMode(m: any, i: number): Mode {
     hideMembers: bool(m?.hideMembers, d.hideMembers),
     hideWatchedAt: num(m?.hideWatchedAt, 0, 100, 0),
     words: strs(m?.words).map((w) => w.toLowerCase()),
+    keep: strs(m?.keep).map((w) => w.toLowerCase()),
     topic: typeof m?.topic === 'string' ? m.topic.trim().slice(0, 40) : '',
   };
 }
@@ -83,6 +86,7 @@ export function normaliseSettings(raw: unknown): Settings {
     blockChannels: strs(r.blockChannels),
     allowChannels: strs(r.allowChannels),
     surfaces,
+    showChip: bool(r.showChip, true),
   };
 }
 

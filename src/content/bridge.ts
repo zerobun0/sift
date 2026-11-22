@@ -4,7 +4,8 @@
 // category lookups out to the background. It trusts nothing the page sends:
 // ids are checked and capped before anything is forwarded.
 
-import { ext, loadSettings } from '../core/ext.ts';
+import { ext, loadSettings, saveSettings } from '../core/ext.ts';
+import { REASON_LABEL } from '../core/reasons.ts';
 import { EV_TO_EXT, EV_TO_PAGE, LS_SETTINGS, VIDEO_ID, type ExtToPage, type PageToExt } from '../core/protocol.ts';
 import { normaliseSettings } from '../core/settings.ts';
 import type { Settings } from '../core/types.ts';
@@ -60,6 +61,23 @@ document.addEventListener(EV_TO_EXT, async (e) => {
     } else if (m.t === 'topics') {
       const topics = (Array.isArray(m.topics) ? m.topics : []).filter((t) => typeof t === 'string').map((t) => t.slice(0, 40)).slice(0, 30);
       if (topics.length) await ext.runtime.sendMessage({ t: 'topics', topics });
+    } else if (m.t === 'tally') {
+      const reasons: Record<string, number> = {};
+      for (const [k, n] of Object.entries(m.reasons ?? {}))
+        if (k in REASON_LABEL && Number.isInteger(n) && n > 0 && n < 1000) reasons[k] = n;
+      const shown = Number.isInteger(m.shown) && m.shown >= 0 && m.shown < 1000 ? m.shown : 0;
+      await ext.runtime.sendMessage({ t: 'tally', shown, reasons });
+    } else if (m.t === 'opened') {
+      if (VIDEO_ID.test(String(m.id)) && Number.isInteger(m.cat)) await ext.runtime.sendMessage({ t: 'opened', id: m.id, cat: m.cat });
+    } else if (m.t === 'allow') {
+      // From Sift's own chip. Checked anyway; it can only make Sift show more, never less.
+      const ch = typeof m.channel === 'string' ? m.channel.trim().slice(0, 100) : '';
+      if (!ch) return;
+      const s = await loadSettings();
+      if (!s.allowChannels.includes(ch)) {
+        s.allowChannels.push(ch);
+        await saveSettings(s);
+      }
     } else if (m.t === 'stats') {
       await ext.runtime.sendMessage({ t: 'stats', stats: m.stats });
     }

@@ -13,6 +13,8 @@ import { EV_TO_EXT, EV_TO_PAGE, LS_CATS, LS_SETTINGS, type ExtToPage, type PageS
 import type { Reason, Settings, Surface, VideoInfo } from '../core/types.ts';
 import { activeMode } from '../core/settings.ts';
 import { readTopics } from '../core/topics.ts';
+import { REFILL_MAX_PAGES, REFILL_TARGET, appendPage, continuationList, countItems, nextToken } from '../core/refill.ts';
+import { createChip, type HiddenRow } from './chip.ts';
 
 const readLS = (k: string): unknown => {
   try {
@@ -28,6 +30,7 @@ const cats: Record<string, number> = (readLS(LS_CATS) as Record<string, number>)
 const MAX_CATS = 40000;
 
 const send = (m: PageToExt) => document.dispatchEvent(new CustomEvent(EV_TO_EXT, { detail: JSON.stringify(m) }));
+const chip = createChip((channel, channelId) => send({ t: 'allow', channel: channelId ?? channel }));
 
 // ------------------------------------------------------------ page state
 
@@ -53,6 +56,9 @@ const lookup = (id: string) => cats[id];
 function process(data: unknown, where: Surface) {
   surface = where;
   const r = filterTree(data, settings, where, lookup);
+  const reasons: Record<string, number> = {};
+  for (const h of r.hidden) reasons[h.reason] = (reasons[h.reason] ?? 0) + 1;
+  if (where !== 'other') send({ t: 'tally', shown: r.shown.length + r.pending.length, reasons });
   for (const h of r.hidden) seen.set(h.info.id, { info: h.info, state: 'removed', reason: h.reason });
   for (const v of r.shown) seen.set(v.id, { info: v, state: 'shown' });
   for (const v of r.pending) seen.set(v.id, { info: v, state: 'shown' });
@@ -211,6 +217,12 @@ function pushStats() {
       }
     }
     send({ t: 'stats', stats: { surface, mode: mode.name, hue: mode.hue, shown, hidden, pending, byReason, reloadable } });
+    const rows: HiddenRow[] = [];
+    for (const s of seen.values()) {
+      const reason = s.state === 'removed' ? s.reason : cssHidden.get(s.info.id);
+      if (reason) rows.push({ info: s.info, reason });
+    }
+    chip.update(settings.enabled && settings.showChip && active, mode.hue, mode.name, rows);
   }, 200);
 }
 
@@ -237,6 +249,9 @@ document.addEventListener(EV_TO_PAGE, (e) => {
 function learnFromPlayer(p: any) {
   const id = p?.videoDetails?.videoId;
   const c = categoryIdFromName(p?.microformat?.playerMicroformatRenderer?.category);
+  // Count as opened only on the watch page itself (hover previews also fetch player data).
+  if (typeof id === 'string' && c !== undefined && new URLSearchParams(location.search).get('v') === id)
+    send({ t: 'opened', id, cat: c });
   if (typeof id === 'string' && c !== undefined && cats[id] !== c) {
     storeCats({ [id]: c });
     send({ t: 'learn', cats: { [id]: c } });
@@ -285,12 +300,44 @@ async function browseIdOf(input: RequestInfo | URL, init?: RequestInit): Promise
   }
 }
 
+/** Filtering left this page thin: fetch following pages ourselves until it looks full again. */
+async function refill(data: unknown, where: Surface, url: string, bodyText: string, headers: Headers) {
+  if (!settings.enabled || !settings.surfaces[where]) return;
+  const list = continuationList(data);
+  if (!list) return;
+  for (let page = 0; page < REFILL_MAX_PAGES && countItems(list) < REFILL_TARGET; page++) {
+    const token = nextToken(list);
+    if (!token) return;
+    try {
+      const body = JSON.parse(bodyText);
+      delete body.browseId;
+      delete body.params;
+      delete body.query;
+      body.continuation = token;
+      const r = await nativeFetch(url, { method: 'POST', headers, body: JSON.stringify(body), credentials: 'include' });
+      if (!r.ok) return;
+      const next = await r.json();
+      process(next, where);
+      appendPage(list, continuationList(next));
+    } catch {
+      return;
+    }
+  }
+}
+
 window.fetch = async function (this: unknown, input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const url = typeof input === 'string' ? input : input instanceof Request ? input.url : String(input);
   const m = FEED.exec(url);
   if (!m) return nativeFetch.call(this, input, init);
   const endpoint = '/youtubei/v1/' + m[1];
   const browseId = m[1] === 'browse' ? await browseIdOf(input, init) : undefined;
+  let bodyText: string | undefined;
+  try {
+    bodyText = typeof init?.body === 'string' ? init.body : input instanceof Request ? await input.clone().text() : undefined;
+  } catch {
+    bodyText = undefined;
+  }
+  const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
   const res = await nativeFetch.call(this, input, init);
   if (!res.ok) return res;
   if (m[1] === 'player') {
@@ -303,7 +350,9 @@ window.fetch = async function (this: unknown, input: RequestInfo | URL, init?: R
   }
   try {
     const data = await res.clone().json();
-    process(data, surfaceFor(endpoint, browseId, location.pathname));
+    const where = surfaceFor(endpoint, browseId, location.pathname);
+    process(data, where);
+    if (bodyText && m[1] !== 'next') await refill(data, where, url, bodyText, headers);
     const out = new Response(JSON.stringify(data), { status: res.status, statusText: res.statusText, headers: res.headers });
     Object.defineProperty(out, 'url', { value: res.url });
     return out;

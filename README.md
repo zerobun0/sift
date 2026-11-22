@@ -1,57 +1,77 @@
-# Sift
+<p align="center"><img src="src/icons/icon-128.png" width="72" alt=""></p>
 
-Sift your YouTube feed: by length, by YouTube's own category, by the topic chips
-YouTube makes for you, and by named **modes** (Everyday, Travel, Learn, Chill...).
-Zen / Firefox first; a Chromium build comes from the same code.
+<h1 align="center">Sift</h1>
 
-Proprietary, all rights reserved (see `LICENSE`). Every line is written here; no
-code is copied from other extensions (BlockTube, SponsorBlock, ...), so it stays ours.
+<p align="center">Your YouTube feed, minus the stuff you didn't come for.<br>
+For Zen and Firefox.</p>
 
-## How it works
+<p align="center"><img src="docs/media/demo.gif" width="760" alt="A YouTube search full of Shorts and short clips, then the same search with Sift on, then the panel that lists what was hidden and why"></p>
 
-- **Filters before YouTube draws anything.** `src/page/hook.ts` runs in YouTube's own
-  page at `document_start`, catches `ytInitialData` as it is assigned and wraps
-  `fetch()` for `/youtubei/v1/browse|search|next`. Unwanted items are removed from the
-  JSON, so there is no flicker and no gaps. Shelves left empty are dropped; page
-  structure (tabs, spinners) is never touched.
-- **Fails open.** Unknown shapes, unknown categories, errors: the video is shown.
-- **Categories** (YouTube's 15) are not in feed data. Order: local cache ->
-  free from every watch page you open -> your own YouTube Data API key
-  (Settings; 1 quota unit per 50 videos, capped at 8,000/day). A video whose
-  category arrives after render is hidden with a CSS `:has()` rule, no DOM scanning.
-- **YouTube topics:** the chips at the top of your home feed (Camping, Podcasts, ...)
-  are read and listed in the popup. A mode can pick one; Sift selects that chip on
-  Home for you (once per visit; your own click wins).
-- **Never bundle a key.** The owner's key lives only in `.env.youtube` (git-ignored)
-  and in the browser's extension storage after pasting it in Settings.
+Sift hides videos before YouTube draws them, so there is no flicker and no
+empty holes in the grid. You decide what "the stuff you didn't come for" is:
 
-## Layout
+- **Length.** Only 20-60 minute videos tonight? One click.
+- **Shorts, live, upcoming, members-only, mixes, already watched.**
+- **YouTube's own topics.** The chips YouTube builds for you on the home page
+  (Camping, Podcasts, whatever it has learned you like) show up in Sift. Pick one
+  and Home opens on it every time.
+- **Categories.** Travel, Education, Music and the other twelve YouTube uses.
+- **Your own words.** Hide titles containing "reaction", or keep only titles
+  containing "bushcraft".
+- **Channels.** Never show these, always show those.
 
-| Path | What |
+Put a set of these together and it's a **mode**. Sift comes with Everyday, Travel,
+Learn and Chill, and you can make your own and switch between them from the toolbar.
+
+## What you see
+
+| | |
 |---|---|
-| `src/core/` | Pure logic, unit-tested: item reading (`extract.ts`), rules (`filter.ts`), settings, topics, categories |
-| `src/page/hook.ts` | Runs in YouTube's page world: data hooks, CSS hiding, topic chip |
-| `src/content/bridge.ts` | Content script: settings in, lookups out; validates everything |
-| `src/background/index.ts` | Category cache + API lookups, toolbar badge |
-| `src/ui/` | Popup + settings page (hand-made CSS, OKLCH tokens, light/dark, reduced motion) |
-| `test/` | `node --test` on real YouTube JSON saved in `test/fixtures` (2026-11-22) |
+| <img src="docs/media/popup.png" width="300" alt="The Sift popup: hidden count, modes, YouTube topics, length, categories"> | **The popup.** How many videos were hidden on this page and why, your modes, and the knobs for the current mode. |
+| <img src="docs/media/why-panel.png" width="420" alt="A list of hidden videos with the reason next to each"> | **Why was that hidden?** The small chip in the corner of YouTube opens a list of everything Sift took out, with the reason. One click lets a channel through. |
+| <img src="docs/media/stats.png" width="420" alt="Stats page: videos offered, hidden, share sifted out, by day and by reason"> | **Stats.** What YouTube offered, what you kept, what you actually opened. Counted only in your browser. |
 
-## Commands
+## Install
+
+- **Firefox / Zen:** from addons.mozilla.org (link here once the listing is live), or grab the
+  signed `.xpi` from [Releases](../../releases) and drag it onto a browser window.
+- Needs Firefox 140 or newer. Zen follows current Firefox, so any recent Zen works.
+
+### The API key is optional
+
+Everything above works without one, **except category filtering**. YouTube doesn't
+put a video's category in the feed, so without a key Sift only knows the
+categories of videos you have opened. With your own free key it asks YouTube
+directly, once per video. The key stays in your browser and is only ever sent to
+YouTube. Settings explains how to get one in about five minutes.
+
+## Privacy
+
+No account, no analytics, no server of ours. Settings, history and the category
+cache live in your browser's extension storage. The only network request Sift
+makes itself is to YouTube's API, with your key, if you add one.
+
+## Building it
 
 ```
 npm install
-npm run check      # typecheck + tests + build + web-ext lint
-npm run build      # dist/firefox (Zen/Firefox) and dist/chrome
-npm run package    # artifacts/sift-<version>.zip for AMO
+npm run check     # types, tests, build, Mozilla's linter
+npm run build     # dist/firefox (main) and dist/chrome
 ```
 
-Try it in Zen: `about:debugging#/runtime/this-firefox` -> Load Temporary Add-on ->
-`dist/firefox/manifest.json` (stays until Zen restarts). A permanent install needs an
-AMO-signed build: bump `version` in package.json, `npm run build`, load `../.env.amo` into the
-env, `npx web-ext sign --channel unlisted --source-dir dist/firefox --artifacts-dir artifacts`.
-If it ends in "fetch failed" while waiting for approval, the upload still went through: run
-`node scripts/fetch-signed.mjs artifacts/sift-<version>.xpi` until it says saved. Install in Zen:
-drag the .xpi onto a Zen window (or about:addons -> gear -> Install Add-on From File).
+Load `dist/firefox/manifest.json` from `about:debugging` to try a change. The
+tests run against real YouTube page data saved in `test/fixtures`; when YouTube
+changes its format, save a fresh page there and the tests show what broke.
 
-When YouTube changes its JSON: save a new page's `ytInitialData` into
-`test/fixtures/`, run `npm test`, fix `src/core/extract.ts`.
+How it works, briefly: a script runs in the YouTube page before YouTube's own
+code, catches the feed data as it arrives (the first page and every request
+after it) and removes what your rules say to remove. Anything it doesn't
+recognise is left alone, so a YouTube change can make Sift miss things but
+never hide your whole feed.
+
+## License
+
+Copyright (c) 2026 zerobun. All rights reserved. The source is public so you can
+read it and see exactly what the extension does; it is not open source. See
+[LICENSE](LICENSE). The bundled font, Bricolage Grotesque, is under the SIL Open
+Font License.

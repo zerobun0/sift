@@ -115,7 +115,7 @@ function fromLockup(r: Obj): VideoInfo | null {
   for (const b of findAll(r.contentImage, 'thumbnailBadgeViewModel', 10) as Obj[]) {
     const t = String(b?.text ?? '');
     const style = String(b?.badgeStyle ?? '');
-    if (style.includes('LIVE') || /^live$/i.test(t)) live = true;
+    if (style.includes('LIVE') || /^(live|station|premiere|live now)$/i.test(t)) live = true;
     else if (/^(upcoming|premiere)/i.test(t)) upcoming = true;
     else if (/^mix$/i.test(t)) kind = 'mix';
     seconds ??= parseClock(t);

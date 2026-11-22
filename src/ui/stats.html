@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sift stats</title>
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="options.css" />
+    <link rel="stylesheet" href="stats.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="head">
+        <img class="mark big-mark" src="icons/sift.svg" alt="" />
+        <div>
+          <h1>Your feed, sifted</h1>
+          <p class="muted">Last 14 days. Counted only in this browser; nothing is sent anywhere.</p>
+        </div>
+      </header>
+
+      <section class="figures" id="figures"></section>
+
+      <section class="card">
+        <h2>Each day</h2>
+        <div class="legend-row">
+          <span><i class="sw kept"></i>shown</span><span><i class="sw gone"></i>hidden</span>
+        </div>
+        <div class="days" id="days" role="img"></div>
+        <p class="tip num" id="tip" aria-live="polite">&nbsp;</p>
+      </section>
+
+      <div class="two">
+        <section class="card">
+          <h2>Why videos were hidden</h2>
+          <div class="hbars" id="reasons"></div>
+        </section>
+        <section class="card">
+          <h2>What you opened, by category</h2>
+          <div class="hbars" id="cats"></div>
+        </section>
+      </div>
+
+      <p class="row">
+        <button class="btn" id="clear">Clear history</button>
+        <span class="status" id="clear-status" role="status"></span>
+      </p>
+    </main>
+    <script src="stats.js"></script>
+  </body>
+</html>

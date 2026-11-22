@@ -74,6 +74,25 @@ async function lookup(ids: string[]): Promise<Cats> {
   return found;
 }
 
+// Local history for the stats page: one small record per day, 90 days kept. Never leaves the browser.
+interface Day {
+  shown: number;
+  reasons: Record<string, number>;
+  cats: Record<string, number>;
+  opened: string[];
+}
+async function tally(change: (d: Day) => void): Promise<boolean> {
+  const day = new Date().toLocaleDateString('en-CA');
+  const { history } = await ext.storage.local.get('history');
+  const h: Record<string, Day> = history && typeof history === 'object' ? history : {};
+  const d = (h[day] ??= { shown: 0, reasons: {}, cats: {}, opened: [] });
+  change(d);
+  if (d.opened.length > 2000) d.opened = d.opened.slice(-2000);
+  for (const k of Object.keys(h).sort().slice(0, -90)) delete h[k];
+  await ext.storage.local.set({ history: h });
+  return true;
+}
+
 async function saveStats(tabId: number, stats: PageStats) {
   await ext.storage.session.set({ [`tab:${tabId}`]: { ...stats, at: Date.now() } });
   const text = stats.hidden > 0 ? (stats.hidden > 999 ? '999+' : String(stats.hidden)) : '';
@@ -96,6 +115,17 @@ ext.runtime.onMessage.addListener((msg: ToBackground, sender: any) => {
       return Promise.resolve(false);
     case 'topics':
       return ext.storage.local.set({ topics: { list: (msg.topics ?? []).slice(0, 30), at: Date.now() } }).then(() => true);
+    case 'tally':
+      return tally((d) => {
+        d.shown += msg.shown;
+        for (const [k, n] of Object.entries(msg.reasons)) d.reasons[k] = (d.reasons[k] ?? 0) + n;
+      });
+    case 'opened':
+      return tally((d) => {
+        if (d.opened.includes(msg.id)) return;
+        d.opened.push(msg.id);
+        d.cats[msg.cat] = (d.cats[msg.cat] ?? 0) + 1;
+      });
     case 'test-key':
       return fromApi(['dQw4w9WgXcQ'], msg.key).then(
         (r) => ({ ok: r.dQw4w9WgXcQ === 10 }),

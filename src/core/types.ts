@@ -43,6 +43,8 @@ export interface Mode {
   hideWatchedAt: number;
   /** Hide titles containing any of these (case-insensitive). */
   words: string[];
+  /** Your own topic: keep only titles containing one of these. Empty = off. */
+  keep: string[];
   /** One of YouTube's own home-feed topic chips to select automatically. '' = none. */
   topic: string;
 }
@@ -57,6 +59,8 @@ export interface Settings {
   /** Always shown, whatever the mode says. */
   allowChannels: string[];
   surfaces: Record<Surface, boolean>;
+  /** Small "N hidden" chip on YouTube pages; click it to see what was hidden and why. */
+  showChip: boolean;
 }
 
 export type Reason =
@@ -70,6 +74,8 @@ export type Reason =
   | 'too-short'
   | 'too-long'
   | 'word'
+  | 'keep'
+  | 'no-length'
   | 'category';
 
 /** Result of judging one item: why it goes, or null when it stays. */

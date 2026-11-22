@@ -4,6 +4,7 @@ import { CATEGORIES } from '../core/categories.ts';
 import { ext, loadSettings, saveSettings } from '../core/ext.ts';
 import type { PageStats } from '../core/protocol.ts';
 import { activeMode } from '../core/settings.ts';
+import { REASON_LABEL } from '../core/reasons.ts';
 import type { Mode, Reason, Settings } from '../core/types.ts';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -26,19 +27,6 @@ const HIDES: Array<{ label: string; get: (m: Mode) => boolean; set: (m: Mode, on
   { label: 'Watched', get: (m) => m.hideWatchedAt > 0, set: (m, on) => (m.hideWatchedAt = on ? 90 : 0) },
 ];
 
-const REASON_LABEL: Record<Reason, string> = {
-  channel: 'blocked channel',
-  short: 'Shorts',
-  mix: 'mixes',
-  live: 'live',
-  upcoming: 'upcoming',
-  members: 'members-only',
-  watched: 'watched',
-  'too-short': 'too short',
-  'too-long': 'too long',
-  word: 'title words',
-  category: 'category',
-};
 
 const SURFACE_LABEL: Record<string, string> = {
   home: 'Home',
@@ -260,6 +248,10 @@ async function main() {
     window.close();
   };
   $('settings').addEventListener('click', openOptions);
+  $('stats').addEventListener('click', () => {
+    ext.tabs.create({ url: ext.runtime.getURL('stats.html') });
+    window.close();
+  });
   $('open-key').addEventListener('click', openOptions);
 }
 

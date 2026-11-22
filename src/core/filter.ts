@@ -25,8 +25,12 @@ export function judge(v: VideoInfo, s: Settings, cat: CategoryLookup, mode: Mode
   if (channelMatches(s.blockChannels, v)) return out('channel');
   if (v.kind === 'short') return mode.hideShorts ? out('short') : keep;
   if (v.kind === 'mix') return mode.hideMixes ? out('mix') : keep;
-  if (v.kind === 'playlist') return keep;
+  // A length range or a category pick asks for ordinary videos: things with no set length
+  // (playlists, courses, 24/7 stations, live streams) can't match it, so they go too.
+  const picky = mode.minSec > 0 || mode.maxSec > 0 || mode.include.length > 0;
+  if (v.kind === 'playlist') return picky ? out('no-length') : keep;
   if (v.live && mode.hideLive) return out('live');
+  if (v.live && (mode.minSec > 0 || mode.maxSec > 0)) return out('no-length');
   if (v.upcoming && mode.hideUpcoming) return out('upcoming');
   if (v.members && mode.hideMembers) return out('members');
   if (mode.hideWatchedAt > 0 && (v.watched ?? 0) >= mode.hideWatchedAt) return out('watched');
@@ -34,9 +38,10 @@ export function judge(v: VideoInfo, s: Settings, cat: CategoryLookup, mode: Mode
     if (mode.minSec > 0 && v.seconds < mode.minSec) return out('too-short');
     if (mode.maxSec > 0 && v.seconds > mode.maxSec) return out('too-long');
   }
-  if (mode.words.length) {
+  if (mode.words.length || mode.keep.length) {
     const t = v.title.toLowerCase();
     if (mode.words.some((w) => t.includes(w))) return out('word');
+    if (mode.keep.length && !mode.keep.some((w) => t.includes(w))) return out('keep');
   }
   if (mode.include.length || mode.exclude.length) {
     const c = cat(v.id);

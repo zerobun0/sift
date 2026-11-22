@@ -36,6 +36,8 @@ function manifest(target) {
           // 140: data_collection_permissions (AMO 2026 rule). Zen tracks current Firefox.
           strict_min_version: '140.0',
           data_collection_permissions: { required: ['none'] },
+          // Self-distributed (GitHub) builds update from updates.json in the repo; AMO-listed builds must not carry this.
+          ...(process.env.SIFT_SELF === '1' && { update_url: 'https://raw.githubusercontent.com/zerobun0/sift/main/updates.json' }),
         },
         gecko_android: { strict_min_version: '142.0' },
       },
@@ -49,6 +51,7 @@ const entries = {
   background: 'src/background/index.ts',
   popup: 'src/ui/popup.ts',
   options: 'src/ui/options.ts',
+  stats: 'src/ui/stats.ts',
 };
 
 async function build(target) {
@@ -66,7 +69,7 @@ async function build(target) {
     legalComments: 'none',
     logLevel: 'warning',
   };
-  for (const f of ['popup.html', 'popup.css', 'options.html', 'options.css', 'base.css']) cpSync(`${root}/src/ui/${f}`, `${out}/${f}`);
+  for (const f of ['popup.html', 'popup.css', 'options.html', 'options.css', 'base.css', 'stats.html', 'stats.css']) cpSync(`${root}/src/ui/${f}`, `${out}/${f}`);
   cpSync(`${root}/src/icons`, `${out}/icons`, { recursive: true });
   cpSync(
     `${root}/node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2`,

@@ -54,6 +54,7 @@ function render() {
   $('modes').replaceChildren(...settings.modes.map(modeRow));
   $<HTMLButtonElement>('add-mode').disabled = settings.modes.length >= 12;
 
+  $<HTMLInputElement>('show-chip').checked = settings.showChip;
   $<HTMLTextAreaElement>('block').value = settings.blockChannels.join('\n');
   $<HTMLTextAreaElement>('allow').value = settings.allowChannels.join('\n');
 }
@@ -124,7 +125,24 @@ function modeRow(m: Mode): HTMLElement {
   });
   words.append(wordsLabel, wordsInput);
 
-  row.append(top, words);
+  const keep = document.createElement('label');
+  keep.className = 'stack words';
+  const keepLabel = document.createElement('span');
+  keepLabel.textContent = 'Your own topic: only show titles containing (comma separated, empty = off)';
+  const keepInput = document.createElement('input');
+  keepInput.className = 'field';
+  keepInput.value = m.keep.join(', ');
+  keepInput.placeholder = 'e.g. camping, bushcraft, tent';
+  keepInput.addEventListener('input', () => {
+    m.keep = keepInput.value
+      .split(',')
+      .map((w) => w.trim().toLowerCase())
+      .filter(Boolean);
+    commit();
+  });
+  keep.append(keepLabel, keepInput);
+
+  row.append(top, keep, words);
   if (m.id === settings.modeId) {
     const active = document.createElement('span');
     active.className = 'mode-active';
@@ -181,6 +199,10 @@ async function main() {
     }
   });
 
+  $('show-chip').addEventListener('change', (e) => {
+    settings.showChip = (e.target as HTMLInputElement).checked;
+    commit();
+  });
   $('add-mode').addEventListener('click', () => {
     const base = structuredClone(DEFAULT_MODES[0]);
     const n = settings.modes.length + 1;

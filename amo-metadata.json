@@ -1,0 +1,7 @@
+{
+  "version": { "license": "all-rights-reserved", "approval_notes": "Source is bundled with esbuild (not minified). Build: npm ci && npm run build -> dist/firefox. Public repo: https://github.com/zerobun0/sift" },
+  "categories": { "firefox": ["photos-music-videos"] },
+  "summary": { "en-US": "Filter your YouTube feed before it loads: by length, Shorts, live, YouTube's own topics, categories and your own words. Switch between modes like Learn or Chill." },
+  "description": { "en-US": "Sift hides YouTube videos you don't want before the page draws them, so there's no flicker and no gaps.\n\n- Length ranges (e.g. only 20-60 minute videos)\n- Hide Shorts, live, upcoming, members-only, mixes, already watched\n- Use the topic chips YouTube builds for you on the home page\n- YouTube's 15 categories (optional free API key of your own)\n- Hide or require title words, block or allow channels\n- Modes you switch from the toolbar\n- A small chip on YouTube shows what was hidden and why\n- Local stats page\n\nNo account, no tracking, no servers. Everything stays in your browser." },
+  "homepage": { "en-US": "https://github.com/zerobun0/sift" }
+}

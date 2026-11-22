@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "sift@zerobun.com": {
+      "updates": [
+        {
+          "version": "0.2.0",
+          "update_link": "https://github.com/zerobun0/sift/releases/download/v0.2.0/sift-0.2.0.xpi"
+        }
+      ]
+    }
+  }
+}

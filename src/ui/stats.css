@@ -1,0 +1,126 @@
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.figure {
+  background: var(--color-paper-2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+}
+.figure b {
+  display: block;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'wdth' 88;
+  font-variant-numeric: tabular-nums;
+}
+.figure span {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+}
+.legend-row {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  margin-bottom: var(--space-sm);
+}
+.sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+.kept {
+  background: var(--color-accent);
+}
+.gone {
+  background: var(--color-ink-3);
+}
+.days {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 6px;
+  height: 150px;
+  align-items: end;
+  border-bottom: 1px solid var(--color-rule);
+}
+.day {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  height: 100%;
+  justify-content: flex-start;
+  cursor: default;
+  border-radius: 4px 4px 0 0;
+}
+.day i {
+  display: block;
+  border-radius: 4px 4px 0 0;
+  min-height: 0;
+}
+.day i + i {
+  border-radius: 4px 4px 0 0;
+}
+.day i.kept {
+  border-radius: 0;
+}
+.day:hover i,
+.day:focus-visible i {
+  filter: brightness(1.12);
+}
+.day-labels {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+  text-align: center;
+  margin-top: 4px;
+}
+.tip {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  margin: var(--space-sm) 0 0;
+  min-height: 1.4em;
+}
+.hbars {
+  display: grid;
+  gap: var(--space-sm);
+}
+.hbar {
+  display: grid;
+  grid-template-columns: minmax(0, 9em) minmax(0, 1fr) 3.5em;
+  gap: var(--space-sm);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+.hbar .track {
+  height: 10px;
+}
+.hbar .fill {
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--color-accent);
+  transform-origin: left;
+  animation: grow var(--dur-med) var(--ease-out) both;
+}
+.hbar .v {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-2);
+}
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+.empty-note {
+  color: var(--color-ink-3);
+  font-size: var(--text-sm);
+}
