@@ -190,6 +190,27 @@ h2 {
   cursor: pointer;
 }
 
+.update {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-top: 10px;
+  padding: 7px var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+.update:hover {
+  filter: brightness(1.04);
+}
+.update span {
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .foot-links {
   display: flex;
 }

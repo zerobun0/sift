@@ -58,10 +58,15 @@ Sift isn't on the Chrome Web Store, so it goes in by hand:
 4. Click **Load unpacked** and pick the unzipped folder, the one with `manifest.json` in it.
 5. Pin Sift from the puzzle-piece menu so the icon stays in the toolbar.
 
-To update: download the new zip, unzip it over the same folder, then press the
-reload arrow on Sift's card in `chrome://extensions`. Chrome may show a
-"developer mode extensions" notice on start-up; that's normal for anything not
-from its store.
+Chrome may show a "developer mode extensions" notice on start-up; that's normal
+for anything not from its store.
+
+### Updates
+
+| | How it updates |
+|---|---|
+| Zen, Firefox | By itself. The browser checks about once a day; to check now: `about:addons` → gear → **Check for Updates**. |
+| Chrome and friends | Chrome doesn't update extensions from outside its store, so Sift tells you instead: when a new version is out, the popup shows **"Sift x.y.z is out · Get it"**. Download the new zip, unzip it over the same folder, then press the reload arrow on Sift's card in `chrome://extensions`. Your settings stay. |
 
 ### The API key is optional
 

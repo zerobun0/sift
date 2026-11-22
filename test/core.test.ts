@@ -238,3 +238,12 @@ test('refill helpers: find the list, its token, count and append', async () => {
   assert.equal(nextToken(list), 'T2');
   assert.equal(continuationList(homeFeed()) !== null, true);
 });
+
+test('isNewer compares release versions', async () => {
+  const { isNewer } = await import('../src/core/version.ts');
+  assert.equal(isNewer('v0.3.0', '0.2.2'), true);
+  assert.equal(isNewer('v0.2.10', '0.2.9'), true);
+  assert.equal(isNewer('v0.2.2', '0.2.2'), false);
+  assert.equal(isNewer('v0.1.9', '0.2.0'), false);
+  assert.equal(isNewer('nightly', '0.2.0'), false);
+});

@@ -8,6 +8,7 @@
 // key (1 quota unit per 50 videos, capped well under the free 10,000/day).
 
 import { ext } from '../core/ext.ts';
+import { isNewer } from '../core/version.ts';
 import { VIDEO_ID, type PageStats, type ToBackground } from '../core/protocol.ts';
 
 const DAILY_UNITS = 8000;
@@ -93,6 +94,35 @@ async function tally(change: (d: Day) => void): Promise<boolean> {
   return true;
 }
 
+declare const __TARGET__: string;
+const RELEASES = 'https://api.github.com/repos/zerobun0/sift/releases/latest';
+
+/** Chrome only (Firefox/Zen update themselves): at most every 12 h, ask GitHub for the newest release. */
+async function checkUpdate(): Promise<{ version: string; url: string } | null> {
+  if (__TARGET__ !== 'chrome') return null;
+  const current = ext.runtime.getManifest().version;
+  const { update } = await ext.storage.local.get('update');
+  let u = update;
+  if (!u || Date.now() - (u.checkedAt ?? 0) > 12 * 3600e3) {
+    try {
+      const r = await fetch(RELEASES, { headers: { Accept: 'application/vnd.github+json' }, credentials: 'omit' });
+      if (r.ok) {
+        const j = await r.json();
+        const zip = (j.assets ?? []).find((a: any) => /-chrome\.zip$/.test(a?.name ?? ''));
+        u = { version: String(j.tag_name ?? ''), url: String(zip?.browser_download_url ?? j.html_url ?? ''), page: String(j.html_url ?? ''), checkedAt: Date.now() };
+      } else {
+        u = { ...(u ?? {}), checkedAt: Date.now() };
+      }
+      await ext.storage.local.set({ update: u });
+    } catch {
+      return null;
+    }
+  }
+  return u && isNewer(u.version, current) && /^https:\/\/github\.com\/zerobun0\/sift\//.test(u.page ?? '')
+    ? { version: u.version.replace(/^v/, ''), url: u.page }
+    : null;
+}
+
 async function saveStats(tabId: number, stats: PageStats) {
   await ext.storage.session.set({ [`tab:${tabId}`]: { ...stats, at: Date.now() } });
   const text = stats.hidden > 0 ? (stats.hidden > 999 ? '999+' : String(stats.hidden)) : '';
@@ -126,6 +156,8 @@ ext.runtime.onMessage.addListener((msg: ToBackground, sender: any) => {
         d.opened.push(msg.id);
         d.cats[msg.cat] = (d.cats[msg.cat] ?? 0) + 1;
       });
+    case 'check-update':
+      return checkUpdate();
     case 'test-key':
       return fromApi(['dQw4w9WgXcQ'], msg.key).then(
         (r) => ({ ok: r.dQw4w9WgXcQ === 10 }),

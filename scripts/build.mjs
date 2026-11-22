@@ -22,7 +22,8 @@ function manifest(target) {
     action: { default_title: 'Sift', default_popup: 'popup.html', default_icon: icons },
     options_ui: { page: 'options.html', open_in_tab: true },
     permissions: ['storage'],
-    host_permissions: YT,
+    // Chrome can't auto-update a GitHub build, so it checks GitHub's latest release to tell the user.
+    host_permissions: ff ? YT : [...YT, 'https://api.github.com/*'],
     optional_host_permissions: ['https://www.googleapis.com/*'],
     content_scripts: [
       { matches: YT, js: ['hook.js'], run_at: 'document_start', world: 'MAIN' },
@@ -68,6 +69,7 @@ async function build(target) {
     minify: false,
     legalComments: 'none',
     logLevel: 'warning',
+    define: { __TARGET__: JSON.stringify(target) },
   };
   for (const f of ['popup.html', 'popup.css', 'options.html', 'options.css', 'base.css', 'stats.html', 'stats.css']) cpSync(`${root}/src/ui/${f}`, `${out}/${f}`);
   cpSync(`${root}/src/icons`, `${out}/icons`, { recursive: true });

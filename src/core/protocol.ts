@@ -42,6 +42,7 @@ export type ToBackground =
   | { t: 'topics'; topics: string[] }
   | { t: 'tally'; shown: number; reasons: Record<string, number> }
   | { t: 'opened'; id: string; cat: number }
-  | { t: 'test-key'; key: string };
+  | { t: 'test-key'; key: string }
+  | { t: 'check-update' };
 
 export const VIDEO_ID = /^[\w-]{11}$/;

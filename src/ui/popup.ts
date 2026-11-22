@@ -226,6 +226,17 @@ async function main() {
     });
   }
 
+  ext.runtime
+    .sendMessage({ t: 'check-update' })
+    .then((u: { version: string; url: string } | null) => {
+      if (!u) return;
+      const a = $<HTMLAnchorElement>('update');
+      a.href = u.url;
+      a.replaceChildren(`Sift ${u.version} is out`, Object.assign(document.createElement('span'), { textContent: 'Get it' }));
+      a.hidden = false;
+    })
+    .catch(() => {});
+
   ext.storage.onChanged.addListener((changes: any, area: string) => {
     if (area === 'session' && key && changes[key]) renderStats(changes[key].newValue, true);
   });
