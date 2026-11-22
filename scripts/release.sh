@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 # Makes a GitHub release: AMO-signed Firefox/Zen .xpi (self-updating) + Chrome zip (load unpacked).
-# Write CHANGES first (the "What's new" lines). Needs ../.env.amo (WEB_EXT_API_KEY/SECRET) and gh logged in. Version comes from package.json.
+# Write CHANGES first (the "What's new" lines). Needs .env.amo (WEB_EXT_API_KEY/SECRET) and gh logged in. Version comes from package.json.
 set -e
 cd "$(dirname "$0")/.."
 V=$(node -p "require('./package.json').version")
-set -a; . ../.env.amo; set +a
+set -a; . .env.amo; set +a
 SIFT_SELF=1 npm run build
 npx web-ext sign --channel unlisted --source-dir dist/firefox --artifacts-dir artifacts || true
 until [ -f "artifacts/sift-$V.xpi" ]; do node scripts/fetch-signed.mjs "artifacts/sift-$V.xpi" | tail -1; [ -f "artifacts/sift-$V.xpi" ] || sleep 30; done
@@ -20,3 +20,4 @@ V="$V" node -e "const fs=require('fs');fs.writeFileSync('artifacts/notes.md',fs.
 git add updates.json && git commit -qm "updates.json: $V" && git push -q
 gh release create "v$V" "artifacts/sift-$V.xpi" "artifacts/sift-$V-chrome.zip" --title "Sift $V" --notes-file artifacts/notes.md
 rm CHANGES
+rm -f artifacts/*[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-$V.xpi

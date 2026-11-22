@@ -1,6 +1,6 @@
 // Copyright (c) 2026 zerobun. All rights reserved.
 // Downloads an AMO-signed version when 'web-ext sign' loses the connection while waiting (it happened on 0.1.0).
-// Usage (keys from ../.env.amo in the env): node scripts/fetch-signed.mjs artifacts/sift-<v>.xpi   (version read from package.json)
+// Usage (keys from .env.amo in the env): node scripts/fetch-signed.mjs artifacts/sift-<v>.xpi   (version read from package.json)
 import { createHmac, randomUUID } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 const b64 = (o) => Buffer.from(typeof o === 'string' ? o : JSON.stringify(o)).toString('base64url');
