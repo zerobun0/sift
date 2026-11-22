@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sift</title>
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="top">
+      <img class="mark" src="icons/sift.svg" alt="" />
+      <span class="wordmark">Sift</span>
+      <label class="power">
+        <span class="faint" id="power-label">On</span>
+        <input type="checkbox" class="switch" id="enabled" aria-label="Sift on or off" />
+      </label>
+    </header>
+
+    <section class="now" id="now" aria-live="polite">
+      <div class="now-figure">
+        <span class="num big" id="hidden-count">-</span>
+        <span class="now-text">
+          <span id="hidden-label">hidden on this page</span>
+          <span class="faint" id="page-line"></span>
+        </span>
+      </div>
+      <div class="reasons" id="reasons" hidden></div>
+      <button class="btn bring-back" id="reload" hidden></button>
+    </section>
+
+    <nav class="modes" id="modes" role="radiogroup" aria-label="Mode"></nav>
+
+    <section class="block">
+      <h2>YouTube topic <span class="faint hint" id="topic-hint">picked for you on Home</span></h2>
+      <div class="chips" id="topics"></div>
+      <p class="note" id="topic-note" hidden>Open your YouTube home page once and your topics appear here.</p>
+    </section>
+
+    <section class="block">
+      <h2>Length</h2>
+      <div class="chips" id="length"></div>
+      <div class="custom-length" id="custom-length" hidden>
+        <label>From <input class="field num" id="min" type="number" min="0" max="1440" inputmode="numeric" /> min</label>
+        <label>to <input class="field num" id="max" type="number" min="0" max="1440" inputmode="numeric" placeholder="any" /> min</label>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Categories <span class="faint hint" id="cat-hint">none picked = all</span></h2>
+      <div class="chips" id="categories"></div>
+      <p class="note" id="key-note" hidden>
+        Categories need a YouTube API key. <button class="link" id="open-key">Add one</button>
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>Hide</h2>
+      <div class="chips" id="hide"></div>
+    </section>
+
+    <footer class="foot">
+      <span class="faint" id="where"></span>
+      <button class="btn ghost" id="settings">Settings</button>
+    </footer>
+    <script src="popup.js"></script>
+  </body>
+</html>

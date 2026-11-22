@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sift settings</title>
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="head">
+        <img class="mark big-mark" src="icons/sift.svg" alt="" />
+        <div>
+          <h1>Sift settings</h1>
+          <p class="muted">Changes save as you make them.</p>
+        </div>
+      </header>
+
+      <section class="card" id="key-card">
+        <h2>YouTube API key</h2>
+        <p class="muted">
+          YouTube keeps a video's category off the feed, so Sift asks YouTube for it using your own free key. The key
+          stays in this browser. It's only sent to YouTube, and each video is looked up once.
+        </p>
+        <div class="row">
+          <input class="field" id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="AIza..." />
+          <button class="btn primary" id="save-key">Test and save</button>
+        </div>
+        <p class="status" id="key-status" role="status"></p>
+        <details class="how">
+          <summary>How to get a key (5 minutes, free)</summary>
+          <ol>
+            <li>Open console.cloud.google.com and create a project.</li>
+            <li>APIs &amp; Services, Library: enable "YouTube Data API v3".</li>
+            <li>Credentials, Create credentials, API key.</li>
+            <li>Edit the key: API restrictions, YouTube Data API v3 only.</li>
+          </ol>
+        </details>
+      </section>
+
+      <section class="card">
+        <h2>Where to sift</h2>
+        <div class="toggles" id="surfaces"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Modes</h2>
+          <button class="btn" id="add-mode">New mode</button>
+        </div>
+        <div id="modes"></div>
+      </section>
+
+      <section class="card">
+        <h2>Channels</h2>
+        <div class="two">
+          <label class="stack">
+            <span>Never show</span>
+            <textarea class="field" id="block" rows="5" placeholder="One per line: a channel name or its UC... id"></textarea>
+          </label>
+          <label class="stack">
+            <span>Always show</span>
+            <textarea class="field" id="allow" rows="5" placeholder="These skip every rule"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Backup</h2>
+        <p class="muted">Copy your settings out, or paste a copy back in.</p>
+        <textarea class="field mono" id="backup" rows="4" spellcheck="false"></textarea>
+        <div class="row">
+          <button class="btn" id="export">Show my settings</button>
+          <button class="btn" id="import">Load pasted settings</button>
+          <span class="status" id="backup-status" role="status"></span>
+        </div>
+      </section>
+
+      <footer class="foot faint">
+        <span id="version"></span> · Copyright 2026 zerobun. All rights reserved. · Font: Bricolage Grotesque (SIL OFL).
+      </footer>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
