@@ -247,3 +247,19 @@ test('isNewer compares release versions', async () => {
   assert.equal(isNewer('v0.1.9', '0.2.0'), false);
   assert.equal(isNewer('nightly', '0.2.0'), false);
 });
+
+test('autoplay: a hidden "Up next" is swapped for a kept video, or removed', async () => {
+  const { fixAutoplay } = await import('../src/core/autoplay.ts');
+  const next = 'lcOxhH8N3Bo';
+  const keep = collect(load('watch.json')).find((v) => v.kind === 'video' && v.id !== next)!;
+  assert.equal(fixAutoplay(load('watch.json'), () => false, keep), 'kept');
+  const a = load('watch.json');
+  assert.equal(fixAutoplay(a, (id) => id === next, keep), 'swapped');
+  assert.equal(a.contents.twoColumnWatchNextResults.autoplay.autoplay.sets[0].autoplayVideo.watchEndpoint.videoId, keep.id);
+  assert.equal(a.playerOverlays.playerOverlayRenderer.autoplay.playerOverlayAutoplayRenderer.videoId, keep.id);
+  const b = load('watch.json');
+  assert.equal(fixAutoplay(b, (id) => id === next, undefined), 'removed');
+  assert.equal(b.contents.twoColumnWatchNextResults.autoplay, undefined);
+  assert.equal(b.playerOverlays.playerOverlayRenderer.autoplay, undefined);
+  assert.equal(fixAutoplay({}, () => true, keep), 'none');
+});

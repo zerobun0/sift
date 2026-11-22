@@ -232,7 +232,7 @@ async function main() {
       if (!u) return;
       const a = $<HTMLAnchorElement>('update');
       a.href = u.url;
-      a.replaceChildren(`Sift ${u.version} is out`, Object.assign(document.createElement('span'), { textContent: 'Get it' }));
+      a.replaceChildren(`${u.version} is out`, Object.assign(document.createElement('span'), { textContent: 'Get it' }));
       a.hidden = false;
     })
     .catch(() => {});

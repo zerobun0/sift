@@ -14,6 +14,7 @@ import type { Reason, Settings, Surface, VideoInfo } from '../core/types.ts';
 import { activeMode } from '../core/settings.ts';
 import { readTopics } from '../core/topics.ts';
 import { REFILL_MAX_PAGES, REFILL_TARGET, appendPage, continuationList, countItems, nextToken } from '../core/refill.ts';
+import { fixAutoplay } from '../core/autoplay.ts';
 import { createChip, type HiddenRow } from './chip.ts';
 
 const readLS = (k: string): unknown => {
@@ -63,6 +64,11 @@ function process(data: unknown, where: Surface) {
   for (const v of r.shown) seen.set(v.id, { info: v, state: 'shown' });
   for (const v of r.pending) seen.set(v.id, { info: v, state: 'shown' });
   if (r.pending.length) requestCats(r.pending.map((v) => v.id));
+  if (where === 'watch' && settings.enabled && settings.surfaces.watch) {
+    const current = new URLSearchParams(location.search).get('v');
+    const pick = r.shown.find((v) => v.kind === 'video' && v.id !== current);
+    fixAutoplay(data, (id) => seen.get(id)?.state === 'removed', pick);
+  }
   if (where === 'home') {
     const topics = readTopics(data);
     if (topics.length) send({ t: 'topics', topics });

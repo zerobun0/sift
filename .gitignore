@@ -6,3 +6,4 @@ artifacts/
 *.xpi
 *.zip
 CHANGES
+.playwright-mcp/
