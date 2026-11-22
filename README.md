@@ -3,7 +3,7 @@
 <h1 align="center">Sift</h1>
 
 <p align="center">Your YouTube feed, minus the stuff you didn't come for.<br>
-For Zen and Firefox.</p>
+For Firefox and Chrome</p>
 
 <p align="center"><img src="docs/media/demo.gif" width="760" alt="A YouTube search full of Shorts and short clips, then the same search with Sift on, then the panel that lists what was hidden and why"></p>
 
