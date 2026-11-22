@@ -7,7 +7,7 @@ Moved out of `home-lab/browser/sift` into its own project today. History lives i
 notice). Owner runs it in Zen and is happy with it. Public AMO listing (0.2.1) is in Mozilla review; the `amo-link`
 Action finishes that step alone.
 
-**Next:** whatever the owner asks; open suggestions are in TODO.md. Keys: `.env.youtube`, `.env.amo` (both here,
+**Next:** release 0.2.3 (autoplay fix + header update pill, code in 14cda55) and submit it listed to AMO as 0.2.4; steps in TODO.md REL-023. Then done. Keys: `.env.youtube`, `.env.amo` (both here,
 git-ignored, owner-only).
 
 **Gotchas learned:** web-ext sign often dies with "fetch failed" while waiting (upload is fine, fetch the file via API).
