@@ -3,11 +3,9 @@
 Moved out of `home-lab/browser/sift` into its own project today. History lives in git; the original design plan is
 `docs/plan-2026-11-22.md`.
 
-**State:** 0.2.2 is the latest GitHub release (signed .xpi self-updates in Zen/Firefox; Chrome zip shows an update
-notice). Owner runs it in Zen and is happy with it. Public AMO listing (0.2.1) is in Mozilla review; the `amo-link`
-Action finishes that step alone.
+**State:** 0.2.3 is the latest GitHub release (autoplay skips hidden videos, update notice is a header pill). 0.2.4 (same code, no update_url) is submitted to the public AMO listing and waits on Mozilla; the `amo-link` Action adds the link once public. Next unlisted release must be 0.2.5+.
 
-**Next:** release 0.2.3 (autoplay fix + header update pill, code in 14cda55) and submit it listed to AMO as 0.2.4; steps in TODO.md REL-023. Then done. Keys: `.env.youtube`, `.env.amo` (both here,
+**Next:** nothing open; wait for Mozilla. Gotcha: stop any local test server before release.sh (it locks dist/ on Windows).
 git-ignored, owner-only).
 
 **Gotchas learned:** web-ext sign often dies with "fetch failed" while waiting (upload is fine, fetch the file via API).
