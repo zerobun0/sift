@@ -193,3 +193,9 @@ textarea.field {
     order: 3;
   }
 }
+
+.optional {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  margin-left: var(--space-xs);
+}

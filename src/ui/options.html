@@ -18,10 +18,15 @@
       </header>
 
       <section class="card" id="key-card">
-        <h2>YouTube API key</h2>
+        <h2>YouTube API key <span class="faint optional">optional</span></h2>
         <p class="muted">
-          YouTube keeps a video's category off the feed, so Sift asks YouTube for it using your own free key. The key
-          stays in this browser. It's only sent to YouTube, and each video is looked up once.
+          Only needed for <b>category</b> filtering (Travel, Education, Music...). Length, Shorts, live, watched,
+          title words, channels and your YouTube topics all work without it.
+        </p>
+        <p class="muted">
+          YouTube leaves a video's category out of the feed. Without a key, Sift only knows the categories of
+          videos you have opened. With your own free key it asks YouTube directly. The key stays in this browser
+          and is sent only to YouTube.
         </p>
         <div class="row">
           <input class="field" id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="AIza..." />
