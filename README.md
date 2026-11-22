@@ -47,7 +47,11 @@ npm run package    # artifacts/sift-<version>.zip for AMO
 
 Try it in Zen: `about:debugging#/runtime/this-firefox` -> Load Temporary Add-on ->
 `dist/firefox/manifest.json` (stays until Zen restarts). A permanent install needs an
-AMO-signed build (`web-ext sign --channel unlisted`, keys in `../.env.amo`).
+AMO-signed build: bump `version` in package.json, `npm run build`, load `../.env.amo` into the
+env, `npx web-ext sign --channel unlisted --source-dir dist/firefox --artifacts-dir artifacts`.
+If it ends in "fetch failed" while waiting for approval, the upload still went through: run
+`node scripts/fetch-signed.mjs artifacts/sift-<version>.xpi` until it says saved. Install in Zen:
+drag the .xpi onto a Zen window (or about:addons -> gear -> Install Add-on From File).
 
 When YouTube changes its JSON: save a new page's `ytInitialData` into
 `test/fixtures/`, run `npm test`, fix `src/core/extract.ts`.
