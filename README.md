@@ -47,7 +47,7 @@ Get the files from the [latest release](../../releases/latest).
 That's it. The file is signed by Mozilla and Sift updates itself from here
 afterwards. Needs Firefox 140 or newer; any recent Zen works.
 
-A listing on addons.mozilla.org is on its way; the link goes here once it's approved.
+Or install it from addons.mozilla.org: **[Sift on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/f1bc97c64db3428286b8/)** <!-- AMO-LINK-DONE -->
 
 ### Chrome, Edge, Brave, Opera, Vivaldi
 
